@@ -1,0 +1,37 @@
+{
+  "name": "@sirmekus/oku",
+  "version": "1.0.1",
+  "description": "A lightweight, framework-agnostic HTTP client built on the native fetch API",
+  "author": "",
+  "license": "MIT",
+  "keywords": [
+    "http",
+    "fetch",
+    "client",
+    "typescript",
+    "rest"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0"
+  }
+}
