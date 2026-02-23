@@ -1,6 +1,6 @@
 {
   "name": "@sirmekus/oku",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A lightweight, framework-agnostic HTTP client built on the native fetch API",
   "author": "",
   "license": "MIT",

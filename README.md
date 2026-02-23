@@ -28,6 +28,63 @@ oku is **not** the right tool when you need request cancellation (`AbortControll
 
 ---
 
+## oku vs axios
+
+| | oku | axios |
+|---|---|---|
+| Bundle size | ~1 KB minified | ~10 KB minified |
+| Runtime dependencies | Zero | Zero (but heavier core) |
+| Underlying transport | Native `fetch` | `XMLHttpRequest` / `fetch` adapter |
+| Error handling | Rejects on non-2xx | Rejects on non-2xx |
+| File uploads | Auto-detects `File`/`FileList`, switches to `FormData` | Manual `FormData` construction |
+| Loading hooks | Built-in `onStart` / `onComplete` | Requires interceptors or wrapper |
+| Header injection | Explicit only — nothing injected by default | Auto-injects XSRF tokens, can attach cookies |
+| Request interceptors | Not supported | Supported |
+| Request cancellation | Not built-in | Built-in |
+| CDN / no-bundler usage | IIFE build included | UMD build available |
+| TypeScript generics | `get<T>()` / `post<T>()` | Full support |
+| Node.js support | 18+ (native `fetch`) | All versions |
+
+### Where oku wins
+
+**Bundle size.** At ~1 KB, oku is roughly 90% smaller than axios. In library code, CDN-served pages, or anywhere bytes matter, this is the single most impactful difference.
+
+**Automatic file upload handling.** Pass a `File` or `FileList` anywhere in `data` and oku switches to `FormData` automatically. With axios you construct `FormData` by hand and manage `Content-Type` yourself.
+
+```ts
+// oku — nothing extra needed
+await http.post({ url: '/upload', data: { file: fileInput.files[0], label: 'avatar' } });
+
+// axios — manual FormData construction
+const fd = new FormData();
+fd.append('file', fileInput.files[0]);
+fd.append('label', 'avatar');
+await axios.post('/upload', fd);
+```
+
+**No magic header injection.** Axios can silently attach XSRF tokens and cookies depending on your environment and config. oku only sends what you explicitly pass — fewer surprises and easier debugging.
+
+**Built-in lifecycle hooks.** `onStart` / `onComplete` work with any state library or plain variables without setting up a global interceptor:
+
+```ts
+await http.get({
+  url: '/api/orders',
+  onStart: () => setLoading(true),
+  onComplete: () => setLoading(false),
+});
+```
+
+**Pure `fetch` wrapper.** oku doesn't reimplement browser networking — it wraps the platform API directly. Native caching, CORS, and streaming behaviour is preserved exactly.
+
+### Where axios wins
+
+- You need request or response **interceptors** (e.g. to attach a refreshed token on every request).
+- You need built-in **request cancellation** (axios exposes `CancelToken`; with oku you wire `AbortController` yourself).
+- You target **Node.js < 18**, where native `fetch` is unavailable.
+- You need **automatic retry logic** or request deduplication out of the box.
+
+---
+
 ## Installation
 
 ### npm / yarn / pnpm
